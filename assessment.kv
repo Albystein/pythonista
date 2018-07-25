@@ -1,0 +1,267 @@
+#:import main main
+#:import window kivy.core.window
+#:import C kivy.utils.get_color_from_hex
+#:import MDRaisedButton kivymd.button.MDRaisedButton
+#:import MDTextField kivymd.textfields.MDTextField
+#:import MDLabel kivymd.label.MDLabel
+
+<StyledLabel@Label>:
+    size_hint_x:None
+    width:400
+    font_size:'20dp'
+    size_hint_y:None
+    height:40
+
+<StyledTextInput@TextInput>:
+    size_hint_x:None
+    width:300
+    size_hint_y:None
+    height:40
+    multiline:False
+
+<StyledButton@Button>:
+    size_hint_y:None
+    size_hint_x:None
+    width:150
+    height:40
+    pos_hint:{'center_x':.5, 'center_y':.5}
+<MainScrollView>:
+
+<SignUpScreen>:
+    BoxLayout:
+        canvas.before:
+            Color:
+                rgba:C('#3e3d6b')
+            Rectangle:
+                pos:self.pos
+                size:self.size
+
+        orientation:'vertical'
+        StyledLabel:
+            size_hint:1,None
+            font_size:'20dp'
+            size_hint_y:None
+            height:100
+            valign:'center'
+            text:'Please Create an Account'
+
+        GridLayout:
+            spacing:10
+            cols:2
+            rows:5
+            StyledLabel:
+                text:'Name'
+            StyledTextInput:
+                id:name
+            StyledLabel:
+                text:'Username'
+            StyledTextInput:
+                id:username
+            StyledLabel:
+                text:'Email'
+            StyledTextInput:
+                id:email
+            StyledLabel:
+                text:'Password'
+            StyledTextInput:
+                password:True
+                id:password1
+            StyledLabel:
+                text:'Confirm Password'
+            StyledTextInput:
+                id:password2
+                password:True
+        StyledButton:
+            background_color:C('#48dac7')
+            text:'Create Account'
+            on_press:
+                root.register_user(password1.text,password2.text,user_data=name.text+':'+username.text+':'+email.text)
+        Widget:
+            size_hint_y:None
+            height:200
+
+<LoginScreen>:
+    BoxLayout:
+        canvas.before:
+            Color:
+                rgba:C('#3e3d6b')
+            Rectangle:
+                pos:self.pos
+                size:self.size
+        orientation:'vertical'
+        StyledLabel:
+            pos_hint:{'center_x':.5}
+            text:'Please Login'
+            size_hint_y:None
+            height:root.width/4
+
+        GridLayout:
+            spacing:10
+            size_hint_y:None
+            height:root.height/4
+            rows:2
+            cols:2
+            StyledLabel:
+                text:'Username'
+            StyledTextInput:
+                auto_focus:True
+                id:username
+            StyledLabel:
+                text:'Password'
+            StyledTextInput:
+                password:True
+                id:password
+
+        FloatLayout:
+            StyledButton:
+                background_color:C('#48dac7')
+                pos_hint:{'top':1, 'center_x':.5}
+                size_hint_y:None
+                height:40
+                text:'Login'
+                on_press:root.authenticate_user(username.text,password.text)
+
+<MainScreen>:
+    orientation:'vertical'
+    FloatLayout:
+        ActionBar:
+            background_color:C('#1ef91d')
+            pos_hint:{'top':1}
+            ActionView:
+                ActionPrevious:
+                    title:'EASS'
+                    with_previous:False
+                ActionOverflow:
+                    id:overflow
+                    ActionButton:
+                        text:'Senior 6'
+                ActionButton:
+                    text:'Import'
+                    on_press:app.open_popup()
+                ActionButton:
+                    background_color:C('#1ff41d')
+                    text:'Performance Graphs'
+                    on_press:app.draw_line_graph()
+    MainScrollView:
+        pos_hint:{'top':.93}
+        size_hint:(1, None)
+        canvas.before:
+            Color:
+                rgba:C('#3e3d6b')
+            Rectangle:
+                pos:self.pos
+                size:self.size
+
+<MainGridLayout>:
+    size_hint:1,None
+    size_hint_y:None
+    spacing:3
+    padding:2
+
+    cols:2
+    rows:40
+    StyledLabel:
+        text:'Student Name'
+    StyledLabel:
+        text:'Performance'
+<StudentScrollView>:
+
+<StudentScreen>:
+    StudentScrollView:
+        size_hint:(1, None)
+        canvas.before:
+            Color:
+                rgba:.2,1,.6,.4
+            Rectangle:
+                pos:self.pos
+                size:self.size
+
+<AssessmentFileChooser>:
+    BoxLayout:
+        size:root.size
+        pos:root.pos
+
+        BoxLayout:
+            size_hint_x:None
+            width:20
+            pos_hint:{'top':1}
+            orientation:'vertical'
+            size_hint_y:None
+            height:50
+            Button:
+                on_release:filechooser.path =  'C:\\'
+                text:'C'
+            Button:
+                on_press:filechooser.path = 'D:\\'
+                text:'D'
+            Button:
+                on_press:filechooser.path = 'F:\\'
+                text:'F'
+
+        FileChooserListView:
+            id:filechooser
+            on_selection:app.create_db(filechooser.selection[0])
+
+    BoxLayout:
+        size_hint_y:None
+        height:40
+        StyledTextInput:
+            id:import_path
+            size_hint:.5,None
+            text:filechooser.path
+        StyledButton:
+            size_hint:.5, None
+            text:'Exit'
+            on_press:app.dismiss_filechooser()
+
+<DatabaseInfo>:
+    GridLayout:
+        rows:2
+        StyledLabel:
+            text:'Database Name'
+        StyledTextInput:
+            id:db_name
+        StyledLabel:
+            text:'DB table Name'
+        StyledTextInput:
+            id:db_table
+    Button:
+        pos_hint:{'center_y':.4, 'center_x':.5}
+        size_hint_x:None
+        size_hint_y:None
+        height:40
+        width:80
+        text:'Done'
+        on_release:app.create_db()
+
+<LoginFailPopup>:
+    title_size:'30sp'
+    auto_dismiss:False
+    title:'Access Denied'
+    title_color:[1,0,0,1]
+    size_hint:(.7,.7)
+
+    BoxLayout:
+        orientation:'vertical'
+        Label:
+            text:'The username or password you provided is not Correct, Please try again.'
+        StyledButton:
+            text:'Try again'
+            on_press:root.dismiss()
+
+<StylingLabel>:
+    canvas:
+        Color:
+            rgba:root.label_color
+        Rectangle:
+            size:self.size
+            pos:self.pos
+
+<StudentGridLayout>:
+    size_hint:1,1
+    canvas.before:
+        Color:
+            rgba:.2,1,.6,.4
+        Rectangle:
+            pos:self.pos
+            size:self.size
